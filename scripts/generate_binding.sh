@@ -5,9 +5,11 @@ function usage
     CMDNAME=`basename $0`
     cat <<- __EOS
 Usage: ${CMDNAME} [[-l | --lang] csharp] (required)
+                  [[-p | --platform] macos,windows] (required)
                   [-h | --help]
 Option:
-    -l  --lang      programming language       
+    -l  --lang      programming language
+    -p  --platform  specify the target platform
     -h  --help      view help
 __EOS
 }
@@ -19,6 +21,9 @@ fi
 
 USE_CSHARP_FLAG=0
 NOT_SET_LANG=0
+NOT_SET_PLATFORM=0
+PLATFORM_TYPE=""
+DLL_IMPORT_NAME=""
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -27,6 +32,17 @@ while [ "$1" != "" ]; do
                                 USE_CSHARP_FLAG=1
                             else
                                 NOT_SET_LANG=1
+                            fi
+                            ;;
+        -p | --platform )   shift
+                            if [ "$1" = "macos" ]; then
+                                PLATFORM_TYPE="macos"
+                                DLL_IMPORT_NAME="libnative_code.dylib"
+                            elif [ "$1" = "windows" ]; then
+                                PLATFORM_TYPE="windows"
+                                DLL_IMPORT_NAME="libnative_code.dll"
+                            else
+                                NOT_SET_PLATFORM=1
                             fi
                             ;;
         -h | --help )       usage
@@ -43,6 +59,13 @@ if [ $NOT_SET_LANG = 1 ]; then
     usage
     exit 1
 fi
+
+if [ $NOT_SET_PLATFORM = 1 ]; then
+    echo "[Error] Not support platform\n"
+    usage
+    exit 1
+fi
+
 
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 WORKSPACE_DIR=$(cd ${SCRIPT_DIR}/.. && pwd)
@@ -69,8 +92,8 @@ if [ $USE_CSHARP_FLAG = 1 ]; then
     # generate c++ wrapper and c# using swig
     echo "generate cxx wrapper and csharp using swig..."
     swig -csharp -v \
-        -namespace NativeCode \
-        -dllimport libnative_code_csharp.dll \
+        -namespace SwigTest \
+        -dllimport ${DLL_IMPORT_NAME} \
         -I"${SCRIPT_DIR}" \
         -outdir ${CSHARP_CS_GEN_DIR} \
         -o ${CSHARP_CXX_GEN_DIR}/NativeCodeWrapper.cpp \
