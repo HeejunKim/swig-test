@@ -4,7 +4,7 @@ using SwigTest;
 
 namespace Sample {
     class SwigTestSample {
-        static void Main() {
+        public static void Main() {
             Console.WriteLine("Hello Swig Test");
 
             int result = NativeCode.fact(10);
@@ -12,6 +12,9 @@ namespace Sample {
 
             int result1 = NativeCode.my_mod(2, 5);
             Console.WriteLine("my_mode : " + result1);
+
+            int[] source = {1, 2, 3};
+            int[] target = new int[source.Length];
         }
     }
 }

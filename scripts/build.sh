@@ -129,5 +129,5 @@ if [ $USE_CSHARP_FLAG = 1 ]; then
     cd ${WORKSPACE_DIR}
 
     # csharp sample build
-    mcs ${CSHARP_CS_GEN_DIR}/*.cs ${CSHARP_SAMPLE_DIR}/*.cs -out:${BIN_DIR}/SwigTestSample.exe
+    mcs ${CSHARP_CS_GEN_DIR}/*.cs ${CSHARP_SAMPLE_DIR}/*.cs -nologo -debug+ -unsafe -out:${BIN_DIR}/SwigTestSample.exe
 fi
