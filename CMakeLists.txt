@@ -16,5 +16,5 @@ target_link_libraries(native_code
 )
 
 install(TARGETS native_code
-    DESTINATION lib
+    DESTINATION bin
 )

@@ -66,17 +66,39 @@ if [ $NOT_SET_PLATFORM = 1 ]; then
     exit 1
 fi
 
-
+# default path
 SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 WORKSPACE_DIR=$(cd ${SCRIPT_DIR}/.. && pwd)
-GEN_DIR=${WORKSPACE_DIR}/generated
 
-CSHARP_BINDING_DIR=${WORKSPACE_DIR}/swig/csharp
+SWIG_DIR=${WORKSPACE_DIR}/swig
+SAMPLE_DIR=${WORKSPACE_DIR}/sample
+
+GEN_DIR=${WORKSPACE_DIR}/generated
+BUILD_DIR=${WORKSPACE_DIR}/build
+BIN_DIR=${WORKSPACE_DIR}/bin
+
+# path for csharp
+CSHARP_SWIG_DIR=${SWIG_DIR}/csharp
 CSHARP_GEN_ROOT_DIR=${GEN_DIR}/csharp
 CSHARP_CS_GEN_DIR=${CSHARP_GEN_ROOT_DIR}/cs
 CSHARP_CXX_GEN_DIR=${CSHARP_GEN_ROOT_DIR}/cxx
+CSHARP_SAMPLE_DIR=${SAMPLE_DIR}/csharp
 
+# delete build and bin folder
+if [ -e ${BUILD_DIR} ]; then
+    echo "delete build folder...."
+    rm -rf ${BUILD_DIR}
+fi
 
+if [ -e ${BIN_DIR} ]; then
+    echo "delete bin folder...."
+    rm -rf ${BIN_DIR}
+fi
+
+# create build
+mkdir -p ${BUILD_DIR}
+
+# csharp build
 if [ $USE_CSHARP_FLAG = 1 ]; then
     # delete generated folder
     if [ -e ${CSHARP_GEN_ROOT_DIR} ]; then
@@ -97,5 +119,15 @@ if [ $USE_CSHARP_FLAG = 1 ]; then
         -I"${SCRIPT_DIR}" \
         -outdir ${CSHARP_CS_GEN_DIR} \
         -o ${CSHARP_CXX_GEN_DIR}/NativeCodeWrapper.cpp \
-        ${CSHARP_BINDING_DIR}/native_code.i
+        ${CSHARP_SWIG_DIR}/native_code.i
+    
+    # native code and wrapper code build using CMake
+    cd ${BUILD_DIR}
+    cmake -DCMAKE_INSTALL_PREFIX=${WORKSPACE_DIR} ..
+    make
+    make install
+    cd ${WORKSPACE_DIR}
+
+    # csharp sample build
+    mcs ${CSHARP_CS_GEN_DIR}/*.cs ${CSHARP_SAMPLE_DIR}/*.cs -out:${BIN_DIR}/SwigTestSample.exe
 fi
