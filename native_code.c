@@ -1,7 +1,70 @@
 /* File : native_code.c */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "native_code.h"
 
+
+struct test_client {
+  char* test_string;
+  char* test_lang;
+};
+
+test_client_t* test_client_create(const char* test_string, const char* test_lang) {
+  test_client_t* self;
+  self = calloc(1, sizeof(test_client_t));
+  if (self == NULL) {
+    return NULL;
+  }
+
+  if (test_string == NULL) {
+    printf("error test_string null");
+    return NULL;
+  }
+  self->test_string = malloc(strlen(test_string)+1);
+  strncpy(self->test_string, test_string, strlen(test_string)+1);
+
+  if (test_lang == NULL) {
+    printf("error test_lang null");
+    return NULL;
+  }
+  self->test_lang = malloc(strlen(test_lang)+1);
+  strncpy(self->test_lang, test_lang, strlen(test_lang)+1);
+
+  return self;
+}
+
+void test_client_destory(test_client_t *ctx) {
+  if (ctx->test_string) {
+    free(ctx->test_string);
+  }
+
+  if (ctx->test_lang) {
+    free(ctx->test_lang);
+  }
+
+  if (ctx != NULL) {
+    free(ctx);
+  }
+}
+
+const char* get_test_string(test_client_t* ctx) {
+  if (ctx == NULL) {
+    return NULL;
+  }
+
+  return ctx->test_string;
+}
+
+const char* get_test_lang(test_client_t* ctx) {
+  if (ctx == NULL) {
+    return NULL;
+  }
+
+  return ctx->test_lang;
+}
 
 /*
  * default
