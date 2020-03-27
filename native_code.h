@@ -13,8 +13,14 @@ typedef enum test_type {
 } test_type_t;
 
 // struct
+typedef struct test_info {
+    char* office_name;
+    char* building_name;
+    char* persion_name;
+} test_info_t;
+
 typedef struct test_client test_client_t;
-test_client_t* test_client_create(const char* test_string, const char* test_lang);
+test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info);
 void test_client_destory(test_client_t *ctx);
 const char* get_test_string(test_client_t* ctx);
 const char* get_test_lang(test_client_t* ctx);

@@ -41,7 +41,13 @@ namespace Sample {
             PrintArray(target);
 
             Console.WriteLine("=========== Swig Struct Test ===========");
-            TextClient textClient = new TextClient("http://google.com", "english");
+            
+            test_info_t info = new test_info_t();
+            info.building_name = "shinagawa";
+            info.office_name = "jr office";
+            info.persion_name = "joso";
+
+            TextClient textClient = new TextClient("http://google.com", "english", info);
             string urlStr = NativeCode.get_test_string(textClient);
             Console.WriteLine("url string : " + urlStr);
             string language = NativeCode.get_test_lang(textClient);
