@@ -65,4 +65,6 @@ struct test_client {};
   }
 }
 
+%rename("%(ctitle)s") "";
+
 %include "native_code.h"

@@ -7,17 +7,17 @@ namespace Sample {
         public static void Main() {
             Console.WriteLine("=========== Swig Default Test ===========");
 
-            int result = NativeCode.fact(10);
+            int result = NativeCode.Fact(10);
             Console.WriteLine("fact : " + result);
 
-            int result1 = NativeCode.my_mod(2, 5);
+            int result1 = NativeCode.MyMod(2, 5);
             Console.WriteLine("my_mode : " + result1);
 
             Console.WriteLine("=========== Swig Array Test ===========");
             int[] source = {1, 2, 3};
             int[] target = new int[source.Length];
 
-            NativeCode.my_array_copy(source, target, target.Length);
+            NativeCode.MyArrayCopy(source, target, target.Length);
             Console.WriteLine("Contents of copy target array using default marshaling");
             PrintArray(target);
 
@@ -27,7 +27,7 @@ namespace Sample {
             PrintArray(target);
 
             target = new int[] {4, 5, 6};
-            NativeCode.my_array_swap(source, target, target.Length);
+            NativeCode.MyArraySwap(source, target, target.Length);
             Console.WriteLine("Contents of arrays after swapping using default marshaling");
             PrintArray(source);
             PrintArray(target);
@@ -42,15 +42,15 @@ namespace Sample {
 
             Console.WriteLine("=========== Swig Struct Test ===========");
             
-            test_info_t info = new test_info_t();
-            info.building_name = "shinagawa";
-            info.office_name = "jr office";
-            info.persion_name = "joso";
+            TestInfo info = new TestInfo();
+            info.BuildingName = "shinagawa";
+            info.OfficeName = "jr office";
+            info.PersionName = "joso";
 
-            TextClient textClient = new TextClient("http://google.com", "english", info, TestType.TEST_TYPE_OK);
-            string urlStr = NativeCode.get_test_string(textClient);
+            TextClient textClient = new TextClient("http://google.com", "english", info, TestType.TESTTYPEOK);
+            string urlStr = NativeCode.GetTestString(textClient);
             Console.WriteLine("url string : " + urlStr);
-            string language = NativeCode.get_test_lang(textClient);
+            string language = NativeCode.GetTestLang(textClient);
             Console.WriteLine("language : " + language);
         }
 
