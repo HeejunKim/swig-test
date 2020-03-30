@@ -47,7 +47,7 @@ namespace Sample {
             info.office_name = "jr office";
             info.persion_name = "joso";
 
-            TextClient textClient = new TextClient("http://google.com", "english", info);
+            TextClient textClient = new TextClient("http://google.com", "english", info, TestType.TEST_TYPE_OK);
             string urlStr = NativeCode.get_test_string(textClient);
             Console.WriteLine("url string : " + urlStr);
             string language = NativeCode.get_test_lang(textClient);

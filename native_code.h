@@ -7,9 +7,9 @@ extern "C" {
 
 // enum
 typedef enum test_type {
-    TEST_TYPE_OK,
-    TEST_TYPE_NG,
-    TEST_TYPE_NONE
+    TEST_TYPE_OK = 100,
+    TEST_TYPE_NG = 200,
+    TEST_TYPE_NONE = 0
 } test_type_t;
 
 // struct
@@ -20,7 +20,7 @@ typedef struct test_info {
 } test_info_t;
 
 typedef struct test_client test_client_t;
-test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info);
+test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info, test_type_t type);
 void test_client_destory(test_client_t *ctx);
 const char* get_test_string(test_client_t* ctx);
 const char* get_test_lang(test_client_t* ctx);

@@ -12,7 +12,7 @@ struct test_client {
   char* test_lang;
 };
 
-test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info) {
+test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info, test_type_t type) {
   test_client_t* self;
   self = calloc(1, sizeof(test_client_t));
   if (self == NULL) {
@@ -36,6 +36,7 @@ test_client_t* test_client_create(const char* test_string, const char* test_lang
   printf("info office_name : %s\n", info->office_name);
   printf("info building_name : %s\n", info->building_name);
   printf("info persion_name : %s\n", info->persion_name);
+  printf("test type : %d\n", type);
 
   return self;
 }

@@ -56,8 +56,8 @@ struct test_client {};
 %ignore test_client_destory;
 
 %extend test_client {
-  test_client(const char* test_string, const char* test_lang, test_info_t* info) {
-    return test_client_create(test_string, test_lang, info);
+  test_client(const char* test_string, const char* test_lang, test_info_t* info, test_type_t type) {
+    return test_client_create(test_string, test_lang, info, type);
   }
 
   ~test_client() {
