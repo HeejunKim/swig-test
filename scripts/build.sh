@@ -113,7 +113,7 @@ if [ $USE_CSHARP_FLAG = 1 ]; then
 
     # generate c++ wrapper and c# using swig
     echo "generate cxx wrapper and csharp using swig..."
-    swig -csharp -v \
+    swig -csharp -v -debug-typedef \
         -namespace SwigTest \
         -dllimport ${DLL_IMPORT_NAME} \
         -I"${SCRIPT_DIR}" \
