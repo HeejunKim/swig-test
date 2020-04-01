@@ -25,6 +25,10 @@ void test_client_destory(test_client_t *ctx);
 const char* get_test_string(test_client_t* ctx);
 const char* get_test_lang(test_client_t* ctx);
 
+// func ptr
+typedef void (*func_pt)(char* str);
+void test_exec(char* str, func_pt p);
+
 // default
 int fact(int n);
 int my_mod(int n, int m);

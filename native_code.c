@@ -109,3 +109,7 @@ void my_array_swap(int* array1, int* array2, int nitems) {
     array2[i] = temp;
   }
 }
+
+void test_exec(char* str, func_pt p) {
+  p(str);
+}

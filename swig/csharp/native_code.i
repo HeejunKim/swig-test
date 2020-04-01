@@ -2,11 +2,14 @@
 
 %module NativeCode
 %{
-#include <native_code.h>
+  #include <native_code.h>
 %}
 
 // ISO C99 types
 %include stdint.i
+
+// typemap
+%include typemaps.i
 
 // array
 %include arrays_csharp.i
@@ -65,6 +68,22 @@ struct test_client {};
   }
 }
 
-%rename("%(ctitle)s") "";
+%rename("%(camelcase)s") "";
+
+// %define %cs_callback(TYPE, CSTYPE)
+//     %typemap(ctype) TYPE, TYPE& "void*"
+//     %typemap(in) TYPE  %{ $1 = ($1_type)$input; %}
+//     %typemap(in) TYPE& %{ $1 = ($1_type)&$input; %}
+//     %typemap(imtype, out="IntPtr") TYPE, TYPE& "CSTYPE"
+//     %typemap(cstype, out="IntPtr") TYPE, TYPE& "CSTYPE"
+//     %typemap(csin) TYPE, TYPE& "$csinput"
+// %enddef
+
+// %cs_callback(func_pt, FuncPtCallback)
+%typemap(cscode) func_pt %{
+    public delegate void FuncPtCallback(string str);
+%}
+
+%constant double PI = 3.14159;
 
 %include "native_code.h"
