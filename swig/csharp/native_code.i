@@ -1,8 +1,10 @@
 /* native_code.i */
 
-%module NativeCode
-%{
+%module(directors="1") NativeCode
+%runtime %{
   #include <native_code.h>
+
+  typedef void (SWIGSTDCALL *func_pt)(char* str);
 %}
 
 // ISO C99 types
@@ -68,22 +70,34 @@ struct test_client {};
   }
 }
 
-%rename("%(camelcase)s") "";
+// constants
+%constant double PI = 3.14159;
 
-// %define %cs_callback(TYPE, CSTYPE)
-//     %typemap(ctype) TYPE, TYPE& "void*"
-//     %typemap(in) TYPE  %{ $1 = ($1_type)$input; %}
-//     %typemap(in) TYPE& %{ $1 = ($1_type)&$input; %}
-//     %typemap(imtype, out="IntPtr") TYPE, TYPE& "CSTYPE"
-//     %typemap(cstype, out="IntPtr") TYPE, TYPE& "CSTYPE"
-//     %typemap(csin) TYPE, TYPE& "$csinput"
-// %enddef
+// function pointer
+%define %cs_callback(TYPE, CSTYPE)
+        %typemap(ctype) TYPE, TYPE& "void*"
+        %typemap(in) TYPE  %{ $1 = (TYPE)$input; %}
+        %typemap(in) TYPE& %{ $1 = (TYPE*)&$input; %}
+        %typemap(imtype, out="IntPtr") TYPE, TYPE& "CSTYPE"
+        %typemap(cstype, out="IntPtr") TYPE, TYPE& "CSTYPE"
+        %typemap(csin) TYPE, TYPE& "$csinput"
+%enddef
+%define %cs_callback2(TYPE, CTYPE, CSTYPE)
+        %typemap(ctype) TYPE "CTYPE"
+        %typemap(in) TYPE %{ $1 = (TYPE)$input; %}
+        %typemap(imtype, out="IntPtr") TYPE "CSTYPE"
+        %typemap(cstype, out="IntPtr") TYPE "CSTYPE"
+        %typemap(csin) TYPE "$csinput"
+%enddef
 
-// %cs_callback(func_pt, FuncPtCallback)
-%typemap(cscode) func_pt %{
-    public delegate void FuncPtCallback(string str);
+%ignore func_pt;
+
+%cs_callback(func_pt, FuncPtCallback);
+
+%pragma(csharp) moduleimports=%{
+  public delegate void FuncPtCallback(string str);
 %}
 
-%constant double PI = 3.14159;
+%rename("%(camelcase)s") "";
 
 %include "native_code.h"

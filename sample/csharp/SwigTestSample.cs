@@ -52,6 +52,15 @@ namespace Sample {
             Console.WriteLine("url string : " + urlStr);
             string language = NativeCode.GetTestLang(textClient);
             Console.WriteLine("language : " + language);
+
+            Console.WriteLine("=========== Swig function pointer ===========");
+            FuncPtCallback callback = new FuncPtCallback(CallbackTest);
+            NativeCode.TestExec("Called C Function pointer??", callback);
+        }
+
+        public static void CallbackTest(string str)
+        {
+            Console.WriteLine("CallbakcTest : {0}", str);
         }
 
         static void PrintArray(int[] a) {
