@@ -39,6 +39,15 @@ int my_mod(int n, int m);
 void my_array_copy(int* source_array, int* target_array, int nitems);
 void my_array_swap(int* array1, int* array2, int nitems);
 
+
+// struct + function pointer
+typedef struct func_ptr_struct_test {
+    int (*func_1)(void*);
+    int (*func_2)(int);
+    void (*func_3)(void*);
+    void* user_data;
+} func_ptr_struct_test_t;
+
 #ifdef __cplusplus
 }
 #endif
