@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "native_code.h"
 
@@ -11,6 +13,8 @@ struct test_client {
   char* test_string;
   char* test_lang;
 };
+
+func_pt_int global_pt = NULL;
 
 test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info, test_type_t type) {
   test_client_t* self;
@@ -112,4 +116,19 @@ void my_array_swap(int* array1, int* array2, int nitems) {
 
 void test_exec(char* str, func_pt p) {
   p(str);
+}
+
+void *thread_fun(void *vargp) {
+  printf("C Sleep 3 sec.....\n");
+  sleep(3);
+  int result = global_pt("Thread callback arg1", "Thread callback arg2", "UserData");
+  printf("func_pt_int result = %d\n", result);
+  return NULL;
+}
+
+void setCallback(func_pt_int p) {
+  global_pt = p;
+  pthread_t thread_id;
+  pthread_create(&thread_id, NULL, thread_fun, NULL);
+  pthread_join(thread_id, NULL);
 }

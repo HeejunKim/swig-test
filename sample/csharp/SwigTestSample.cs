@@ -56,11 +56,31 @@ namespace Sample {
             Console.WriteLine("=========== Swig function pointer ===========");
             FuncPtCallback callback = new FuncPtCallback(CallbackTest);
             NativeCode.TestExec("Called C Function pointer??", callback);
+
+            FuncPtCallback callback1 = new FuncPtCallback(CallbackTest1);
+            NativeCode.TestExec("No Problem Callback", callback1);
+
+            FuncPtIntCallback intCallback = new FuncPtIntCallback(IntCallbackTest);
+            NativeCode.SetCallback(intCallback);
+
+            Console.WriteLine("=========== Swig Test End ===========");
         }
 
         public static void CallbackTest(string str)
         {
             Console.WriteLine("CallbakcTest : {0}", str);
+        }
+
+        public static void CallbackTest1(string str)
+        {
+            Console.WriteLine("CallbackTest1 : {0}!!!!!", str);
+        }
+
+        public static int IntCallbackTest(string arg1, string arg2, global::System.IntPtr userData)
+        {
+            Console.WriteLine("Called C# Callback : {0}, {1}", arg1, arg2);
+            Console.WriteLine("C Thread ID : {0}", userData);
+            return 3;
         }
 
         static void PrintArray(int[] a) {

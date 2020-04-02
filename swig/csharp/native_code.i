@@ -1,10 +1,8 @@
 /* native_code.i */
 
 %module(directors="1") NativeCode
-%runtime %{
+%{
   #include <native_code.h>
-
-  typedef void (SWIGSTDCALL *func_pt)(char* str);
 %}
 
 // ISO C99 types
@@ -92,10 +90,17 @@ struct test_client {};
 
 %ignore func_pt;
 
+%insert(runtime) %{
+  typedef void (SWIGSTDCALL *func_pt)(char* str);
+  typedef int (SWIGSTDCALL *func_pt_int)(const char* arg1, const char* arg2, void* user_data);
+%}
+
 %cs_callback(func_pt, FuncPtCallback);
+%cs_callback(func_pt_int, FuncPtIntCallback);
 
 %pragma(csharp) moduleimports=%{
-  public delegate void FuncPtCallback(string str);
+    public delegate void FuncPtCallback(string str);
+    public delegate int FuncPtIntCallback(string arg1, string arg2, global::System.IntPtr userData);
 %}
 
 %rename("%(camelcase)s") "";

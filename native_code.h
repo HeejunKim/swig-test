@@ -27,7 +27,9 @@ const char* get_test_lang(test_client_t* ctx);
 
 // func ptr
 typedef void (*func_pt)(char* str);
+typedef int (*func_pt_int)(const char* arg1, const char* arg2, void* user_data);
 void test_exec(char* str, func_pt p);
+void setCallback(func_pt_int p);
 
 // default
 int fact(int n);
