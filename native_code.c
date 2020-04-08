@@ -15,6 +15,7 @@ struct test_client {
 };
 
 func_pt_int global_pt = NULL;
+func_ptr_struct_test_t global_func_struct;
 
 test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info, test_type_t type) {
   test_client_t* self;
@@ -131,4 +132,24 @@ void setCallback(func_pt_int p) {
   pthread_t thread_id;
   pthread_create(&thread_id, NULL, thread_fun, NULL);
   pthread_join(thread_id, NULL);
+}
+
+void regist_func_ptr_struct(func_ptr_struct_test_t* struct_func_ptr){
+  //
+}
+
+void call_struct_func1() {
+  //
+}
+
+void call_struct_func2() {
+  //
+}
+
+void call_struct_func3() {
+  //
+}
+
+void* get_struct_func_user_data() {
+  return NULL;
 }

@@ -11,6 +11,16 @@
 // typemap
 %include typemaps.i
 
+
+// void* <---> global::System.IntPtr
+%typemap(ctype)  void * "void *"
+%typemap(imtype) void * "global::System.IntPtr"
+%typemap(cstype) void * "global::System.IntPtr"
+%typemap(csin)   void * "$csinput"
+%typemap(in)     void * %{ $1 = $input; %}
+%typemap(out)    void * %{ $result = $1; %}
+%typemap(csout)  void * { return $imcall; }
+
 // array
 %include arrays_csharp.i
 
@@ -101,6 +111,59 @@ struct test_client {};
 %pragma(csharp) moduleimports=%{
     public delegate void FuncPtCallback(string str);
     public delegate int FuncPtIntCallback(string arg1, string arg2, global::System.IntPtr userData);
+%}
+
+// struct + function pointer
+%rename(FuncPtrStructTest) func_ptr_struct_test_t;
+%nodefaultctor func_ptr_struct_test;
+%nodefaultdtor func_ptr_struct_test;
+%ignore func_1;
+%ignore func_2;
+%ignore func_3;
+%ignore user_data;
+
+%inline {
+  typedef int (*wrapper_func_1)(void* arg);
+  typedef int (*wrapper_func_2)(int arg);
+  typedef void (*wrapper_func_3)(void* arg);
+}
+
+%extend func_ptr_struct_test {
+    func_ptr_struct_test() {
+      func_ptr_struct_test_t *ptr;
+      ptr = (func_ptr_struct_test_t*)malloc(sizeof(func_ptr_struct_test_t));
+      return ptr;
+    }
+
+    void SetFunc1Callback(wrapper_func_1 callback) {
+      $self->func_1 = callback;
+    }
+
+    void SetFunc2Callback(wrapper_func_2 callback) {
+      $self->func_2 = callback;
+    }
+
+    void SetFunc3Callback(wrapper_func_3 callback) {
+      $self->func_3 = callback;
+    }
+
+    void SetUserDate(void* data) {
+      $self->user_data = data;
+    }
+
+    ~func_ptr_struct_test() {
+      free($self);
+    }
+};
+
+%cs_callback(wrapper_func_1, FuncPtrStructTest.Func1Callback);
+%cs_callback(wrapper_func_2, FuncPtrStructTest.Func2Callback);
+%cs_callback(wrapper_func_3, FuncPtrStructTest.Func3Callback);
+
+%typemap(cscode) func_ptr_struct_test %{
+  public delegate int Func1Callback(global::System.IntPtr arg);
+  public delegate int Func2Callback(int arg);
+  public delegate void Func3Callback(global::System.IntPtr arg);
 %}
 
 %rename("%(camelcase)s") "";

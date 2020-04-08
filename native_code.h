@@ -42,11 +42,17 @@ void my_array_swap(int* array1, int* array2, int nitems);
 
 // struct + function pointer
 typedef struct func_ptr_struct_test {
-    int (*func_1)(void*);
-    int (*func_2)(int);
-    void (*func_3)(void*);
+    int (*func_1)(void* arg);
+    int (*func_2)(int arg);
+    void (*func_3)(void* arg);
     void* user_data;
 } func_ptr_struct_test_t;
+
+void regist_func_ptr_struct(func_ptr_struct_test_t* struct_func_ptr);
+void call_struct_func1();
+void call_struct_func2();
+void call_struct_func3();
+void* get_struct_func_user_data();
 
 #ifdef __cplusplus
 }
