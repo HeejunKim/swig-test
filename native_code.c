@@ -15,7 +15,7 @@ struct test_client {
 };
 
 func_pt_int global_pt = NULL;
-func_ptr_struct_test_t global_func_struct;
+func_ptr_struct_test_t* global_func_struct = NULL;
 
 test_client_t* test_client_create(const char* test_string, const char* test_lang, test_info_t* info, test_type_t type) {
   test_client_t* self;
@@ -135,21 +135,24 @@ void setCallback(func_pt_int p) {
 }
 
 void regist_func_ptr_struct(func_ptr_struct_test_t* struct_func_ptr){
-  //
+  global_func_struct = struct_func_ptr;
 }
 
 void call_struct_func1() {
-  //
+  int result = global_func_struct->func_1("Call Struct Function 1");
+  printf("native code call function 1 result = %d\n", result);
 }
 
 void call_struct_func2() {
-  //
+  int result = global_func_struct->func_2(365);
+  printf("native code call function 2 result = %d\n", result);
 }
 
 void call_struct_func3() {
-  //
+  global_func_struct->func_3("Call Struct Function 3");
+  printf("native code call function 3\n");
 }
 
 void* get_struct_func_user_data() {
-  return NULL;
+  return global_func_struct->user_data;
 }

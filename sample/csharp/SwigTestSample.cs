@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 using SwigTest;
 
@@ -63,6 +64,25 @@ namespace Sample {
             FuncPtIntCallback intCallback = new FuncPtIntCallback(IntCallbackTest);
             NativeCode.SetCallback(intCallback);
 
+            Console.WriteLine("=========== Swig struct with function pointer ===========");
+            FuncPtrStructTest.Func1Callback func1Callback = new FuncPtrStructTest.Func1Callback(Func1CallbackTest);
+            FuncPtrStructTest.Func2Callback func2Callback = new FuncPtrStructTest.Func2Callback(Func2CallbackTest);
+            FuncPtrStructTest.Func3Callback func3Callback = new FuncPtrStructTest.Func3Callback(Func3CallbackTest);
+            
+            FuncPtrStructTest structPtrFuncTest = new FuncPtrStructTest();
+            structPtrFuncTest.SetFunc1Callback(func1Callback);
+            structPtrFuncTest.SetFunc2Callback(func2Callback);
+            structPtrFuncTest.SetFunc3Callback(func3Callback);
+            structPtrFuncTest.SetUserDate(new IntPtr(95969596));
+            
+            NativeCode.RegistFuncPtrStruct(structPtrFuncTest);
+            
+            NativeCode.CallStructFunc1();
+            NativeCode.CallStructFunc2();
+            NativeCode.CallStructFunc3();
+            IntPtr userData = NativeCode.GetStructFuncUserData();
+            Console.WriteLine("UserDate in Struct : {0}", userData);
+
             Console.WriteLine("=========== Swig Test End ===========");
         }
 
@@ -74,6 +94,23 @@ namespace Sample {
         public static void CallbackTest1(string str)
         {
             Console.WriteLine("CallbackTest1 : {0}!!!!!", str);
+        }
+
+        public static int Func1CallbackTest(global::System.IntPtr args)
+        {
+            Console.WriteLine("CSharp Callback 1 Argument value : {0}", Marshal.PtrToStringAuto(args));
+            return 3;
+        }
+
+        public static int Func2CallbackTest(int args)
+        {
+            Console.WriteLine("CSharp Callback 2 Argument value : {0}", args);
+            return 5+args;
+        }
+
+        public static void Func3CallbackTest(global::System.IntPtr args)
+        {
+            Console.WriteLine("CSharp Callback 3 Argument value : {0}", Marshal.PtrToStringAuto(args));
         }
 
         public static int IntCallbackTest(string arg1, string arg2, global::System.IntPtr userData)
