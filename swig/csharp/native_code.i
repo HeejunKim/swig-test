@@ -36,7 +36,10 @@
 %clear int* array1;
 %clear int* array2;
 
-%csmethodmodifiers "public unsafe";
+%csmethodmodifiers myArrayCopyUsingFixedArrays "public unsafe";
+%csmethodmodifiers myArraySwapUsingFixedArrays "public unsafe";
+%csmethodmodifiers my_array_copy "public unsafe";
+%csmethodmodifiers my_array_swap "public unsafe";
 
 %apply int FIXED[] { int* source_array }
 %apply int FIXED[] { int* target_array }
@@ -120,12 +123,14 @@ struct test_client {};
 %ignore func_1;
 %ignore func_2;
 %ignore func_3;
+%ignore get_func_data;
 %ignore user_data;
 
 %inline {
   typedef int (*wrapper_func_1)(void* arg);
   typedef int (*wrapper_func_2)(int arg);
   typedef void (*wrapper_func_3)(void* arg);
+  typedef bool (*wrapper_get_func_data)(char* data, int size);
 }
 
 %extend func_ptr_struct_test {
@@ -147,6 +152,10 @@ struct test_client {};
       $self->func_3 = callback;
     }
 
+    void _setGetFuncDataCallback(wrapper_get_func_data callback) {
+      $self->get_func_data = callback;
+    }
+
     void SetUserDate(void* data) {
       $self->user_data = data;
     }
@@ -159,11 +168,33 @@ struct test_client {};
 %cs_callback(wrapper_func_1, FuncPtrStructTest.Func1Callback);
 %cs_callback(wrapper_func_2, FuncPtrStructTest.Func2Callback);
 %cs_callback(wrapper_func_3, FuncPtrStructTest.Func3Callback);
+%cs_callback(wrapper_get_func_data, FuncPtrStructTest.WrapperGetFuncDataCallback);
 
 %typemap(cscode) func_ptr_struct_test %{
   public delegate int Func1Callback(global::System.IntPtr arg);
   public delegate int Func2Callback(int arg);
   public delegate void Func3Callback(global::System.IntPtr arg);
+  public delegate bool GetFuncDataCallback(out byte[] data, int size);
+  private static GetFuncDataCallback _getFuncDataCallback;
+
+  public void SetGetFuncDataCallback(FuncPtrStructTest.GetFuncDataCallback callback)
+  {
+    _getFuncDataCallback = callback;
+    WrapperGetFuncDataCallback wrapperCallback = WrapperGetFuncDataCB;
+    _setGetFuncDataCallback(wrapperCallback);
+  }
+
+  public delegate bool WrapperGetFuncDataCallback(global::System.IntPtr data, int size);
+  static bool WrapperGetFuncDataCB(global::System.IntPtr data, int size)
+  {
+    byte[] bufferData;
+    bool result = _getFuncDataCallback(out bufferData, size);
+    if(result) {
+      global::System.Runtime.InteropServices.Marshal.Copy(bufferData, 0, data, bufferData.Length);
+    }
+    
+    return result;
+  }
 %}
 
 %rename("%(camelcase)s") "";

@@ -153,6 +153,17 @@ void call_struct_func3() {
   printf("native code call function 3\n");
 }
 
+void call_struct_get_func_data() {
+  char result_data[5];
+  printf("[%s] result_data ptr = %p\n", __FUNCTION__, result_data);
+  bool result = global_func_struct->get_func_data(result_data, sizeof(result_data)-1);
+  if (result == true) {
+    printf("native code call get func data = %s\n", result_data);
+  } else {
+    printf("failed native code call get func data!!!!\n");
+  }
+}
+
 void* get_struct_func_user_data() {
   return global_func_struct->user_data;
 }

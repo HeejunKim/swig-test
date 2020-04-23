@@ -1,6 +1,8 @@
 
 /* File : native_code.h */
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,6 +47,7 @@ typedef struct func_ptr_struct_test {
     int (*func_1)(void* arg);
     int (*func_2)(int arg);
     void (*func_3)(void* arg);
+    bool (*get_func_data)(char* data, int size);
     void* user_data;
 } func_ptr_struct_test_t;
 
@@ -52,6 +55,7 @@ void regist_func_ptr_struct(func_ptr_struct_test_t* struct_func_ptr);
 void call_struct_func1();
 void call_struct_func2();
 void call_struct_func3();
+void call_struct_get_func_data();
 void* get_struct_func_user_data();
 
 #ifdef __cplusplus

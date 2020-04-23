@@ -68,11 +68,13 @@ namespace Sample {
             FuncPtrStructTest.Func1Callback func1Callback = new FuncPtrStructTest.Func1Callback(Func1CallbackTest);
             FuncPtrStructTest.Func2Callback func2Callback = new FuncPtrStructTest.Func2Callback(Func2CallbackTest);
             FuncPtrStructTest.Func3Callback func3Callback = new FuncPtrStructTest.Func3Callback(Func3CallbackTest);
+            FuncPtrStructTest.GetFuncDataCallback getFuncDataCallback = new FuncPtrStructTest.GetFuncDataCallback(GetFuncDataCallbackTest);
             
             FuncPtrStructTest structPtrFuncTest = new FuncPtrStructTest();
             structPtrFuncTest.SetFunc1Callback(func1Callback);
             structPtrFuncTest.SetFunc2Callback(func2Callback);
             structPtrFuncTest.SetFunc3Callback(func3Callback);
+            structPtrFuncTest.SetGetFuncDataCallback(getFuncDataCallback);
             structPtrFuncTest.SetUserDate(new IntPtr(95969596));
             
             NativeCode.RegistFuncPtrStruct(structPtrFuncTest);
@@ -80,6 +82,7 @@ namespace Sample {
             NativeCode.CallStructFunc1();
             NativeCode.CallStructFunc2();
             NativeCode.CallStructFunc3();
+            NativeCode.CallStructGetFuncData();
             IntPtr userData = NativeCode.GetStructFuncUserData();
             Console.WriteLine("UserDate in Struct : {0}", userData);
 
@@ -111,6 +114,14 @@ namespace Sample {
         public static void Func3CallbackTest(global::System.IntPtr args)
         {
             Console.WriteLine("CSharp Callback 3 Argument value : {0}", Marshal.PtrToStringAuto(args));
+        }
+
+        public static bool GetFuncDataCallbackTest(out byte[] data, int size)
+        {
+            string testStr = "";
+            testStr = testStr.PadRight(size, 'a');
+            data = System.Text.Encoding.Default.GetBytes(testStr);
+            return true;
         }
 
         public static int IntCallbackTest(string arg1, string arg2, global::System.IntPtr userData)
