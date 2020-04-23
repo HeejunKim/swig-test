@@ -149,7 +149,9 @@ void call_struct_func2() {
 }
 
 void call_struct_func3() {
-  global_func_struct->func_3("Call Struct Function 3");
+  char stringData[] = {'H', 'e', 'l', 'l', 'o', 0};
+  //char* stringData = "Hello Wordl!!";
+  global_func_struct->func_3(stringData);
   printf("native code call function 3\n");
 }
 

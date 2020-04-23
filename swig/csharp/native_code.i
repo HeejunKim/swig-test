@@ -129,7 +129,7 @@ struct test_client {};
 %inline {
   typedef int (*wrapper_func_1)(void* arg);
   typedef int (*wrapper_func_2)(int arg);
-  typedef void (*wrapper_func_3)(void* arg);
+  typedef void (*wrapper_func_3)(char* str);
   typedef bool (*wrapper_get_func_data)(char* data, int size);
 }
 
@@ -148,7 +148,7 @@ struct test_client {};
       $self->func_2 = callback;
     }
 
-    void SetFunc3Callback(wrapper_func_3 callback) {
+    void _setFunc3Callback(wrapper_func_3 callback) {
       $self->func_3 = callback;
     }
 
@@ -167,15 +167,23 @@ struct test_client {};
 
 %cs_callback(wrapper_func_1, FuncPtrStructTest.Func1Callback);
 %cs_callback(wrapper_func_2, FuncPtrStructTest.Func2Callback);
-%cs_callback(wrapper_func_3, FuncPtrStructTest.Func3Callback);
+%cs_callback(wrapper_func_3, FuncPtrStructTest.WrapperFunc3Callback);
 %cs_callback(wrapper_get_func_data, FuncPtrStructTest.WrapperGetFuncDataCallback);
 
 %typemap(cscode) func_ptr_struct_test %{
   public delegate int Func1Callback(global::System.IntPtr arg);
   public delegate int Func2Callback(int arg);
-  public delegate void Func3Callback(global::System.IntPtr arg);
+  public delegate void Func3Callback(string arg);
   public delegate bool GetFuncDataCallback(out byte[] data, int size);
+  private static Func3Callback _func3Callback;
   private static GetFuncDataCallback _getFuncDataCallback;
+
+  public void SetFunc3Callback(FuncPtrStructTest.Func3Callback callback)
+  {
+    _func3Callback = callback;
+    WrapperFunc3Callback wrapperCallback = WrapperFunc3CB;
+    _setFunc3Callback(wrapperCallback);
+  }
 
   public void SetGetFuncDataCallback(FuncPtrStructTest.GetFuncDataCallback callback)
   {
@@ -184,13 +192,21 @@ struct test_client {};
     _setGetFuncDataCallback(wrapperCallback);
   }
 
+  public delegate void WrapperFunc3Callback(global::System.IntPtr str);
   public delegate bool WrapperGetFuncDataCallback(global::System.IntPtr data, int size);
+  
+  static void WrapperFunc3CB(global::System.IntPtr str)
+  {
+    string strData = (str != global::System.IntPtr.Zero ? System.Runtime.InteropServices.Marshal.PtrToStringAuto(str) : null);
+    _func3Callback(strData);
+  }
+
   static bool WrapperGetFuncDataCB(global::System.IntPtr data, int size)
   {
     byte[] bufferData;
     bool result = _getFuncDataCallback(out bufferData, size);
     if(result) {
-      global::System.Runtime.InteropServices.Marshal.Copy(bufferData, 0, data, bufferData.Length);
+      System.Runtime.InteropServices.Marshal.Copy(bufferData, 0, data, bufferData.Length);
     }
     
     return result;

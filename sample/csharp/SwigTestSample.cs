@@ -111,9 +111,9 @@ namespace Sample {
             return 5+args;
         }
 
-        public static void Func3CallbackTest(global::System.IntPtr args)
+        public static void Func3CallbackTest(string arg)
         {
-            Console.WriteLine("CSharp Callback 3 Argument value : {0}", Marshal.PtrToStringAuto(args));
+            Console.WriteLine("CSharp Callback 3 Argument value : {0}", arg);
         }
 
         public static bool GetFuncDataCallbackTest(out byte[] data, int size)

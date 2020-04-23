@@ -46,7 +46,7 @@ void my_array_swap(int* array1, int* array2, int nitems);
 typedef struct func_ptr_struct_test {
     int (*func_1)(void* arg);
     int (*func_2)(int arg);
-    void (*func_3)(void* arg);
+    void (*func_3)(char* str);
     bool (*get_func_data)(char* data, int size);
     void* user_data;
 } func_ptr_struct_test_t;
