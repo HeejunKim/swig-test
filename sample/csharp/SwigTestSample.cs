@@ -65,17 +65,11 @@ namespace Sample {
             NativeCode.SetCallback(intCallback);
 
             Console.WriteLine("=========== Swig struct with function pointer ===========");
-            FuncPtrStructTest.Func1Callback func1Callback = new FuncPtrStructTest.Func1Callback(Func1CallbackTest);
-            FuncPtrStructTest.Func2Callback func2Callback = new FuncPtrStructTest.Func2Callback(Func2CallbackTest);
-            FuncPtrStructTest.Func3Callback func3Callback = new FuncPtrStructTest.Func3Callback(Func3CallbackTest);
-            FuncPtrStructTest.GetFuncDataCallback getFuncDataCallback = new FuncPtrStructTest.GetFuncDataCallback(GetFuncDataCallbackTest);
-            
             FuncPtrStructTest structPtrFuncTest = new FuncPtrStructTest();
-            structPtrFuncTest.SetFunc1Callback(func1Callback);
-            structPtrFuncTest.SetFunc2Callback(func2Callback);
-            structPtrFuncTest.SetFunc3Callback(func3Callback);
-            structPtrFuncTest.SetGetFuncDataCallback(getFuncDataCallback);
-            structPtrFuncTest.SetUserDate(new IntPtr(95969596));
+            structPtrFuncTest.Func1 = Func1CallbackTest;
+            structPtrFuncTest.Func2 = Func2CallbackTest;
+            structPtrFuncTest.Func3 = Func3CallbackTest;
+            structPtrFuncTest.GetFuncData = GetFuncDataCallbackTest;
             
             NativeCode.RegistFuncPtrStruct(structPtrFuncTest);
             
@@ -83,8 +77,12 @@ namespace Sample {
             NativeCode.CallStructFunc2();
             NativeCode.CallStructFunc3();
             NativeCode.CallStructGetFuncData();
-            IntPtr userData = NativeCode.GetStructFuncUserData();
-            Console.WriteLine("UserDate in Struct : {0}", userData);
+
+            // FuncPtrTest.SetFuncPtrStructTest funcPtrStructTestCallbakc = SetFuncPtrStructTestCallback;
+            // FuncPtrTest funcPtrTest = new FuncPtrTest();
+            // funcPtrTest.SetFuncPtrTest(funcPtrStructTestCallbakc);
+
+            // NativeCode.RegistAndCallFuncPtrs(funcPtrTest);
 
             Console.WriteLine("=========== Swig Test End ===========");
         }
@@ -129,6 +127,11 @@ namespace Sample {
             Console.WriteLine("Called C# Callback : {0}, {1}", arg1, arg2);
             Console.WriteLine("C Thread ID : {0}", userData);
             return 3;
+        }
+
+        public static void SetFuncPtrStructTestCallback(FuncPtrStructTest funcCallback, global::System.IntPtr userData)
+        {
+            //
         }
 
         static void PrintArray(int[] a) {

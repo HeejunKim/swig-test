@@ -166,6 +166,10 @@ void call_struct_get_func_data() {
   }
 }
 
-void* get_struct_func_user_data() {
-  return global_func_struct->user_data;
+// void* get_struct_func_user_data() {
+//   return global_func_struct->user_data;
+// }
+
+void regist_and_call_func_ptrs(func_ptr_test_t* func_ptrs) {
+  func_ptrs->set_func_ptr_struct_test(global_func_struct, (void*)"232324");
 }

@@ -56,7 +56,14 @@ void call_struct_func1();
 void call_struct_func2();
 void call_struct_func3();
 void call_struct_get_func_data();
-void* get_struct_func_user_data();
+// void* get_struct_func_user_data();
+
+typedef struct func_ptr_test {
+    void (*set_func_ptr_struct_test)(func_ptr_struct_test_t* func_callback, void* user_data);
+    void* user_data;
+} func_ptr_test_t;
+
+void regist_and_call_func_ptrs(func_ptr_test_t* func_ptrs);
 
 #ifdef __cplusplus
 }
