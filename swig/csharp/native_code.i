@@ -203,12 +203,12 @@ struct test_client {};
   public Func1Callback Func1
   {
     set {
-      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(value);
+      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate<Func1Callback>(value);
       SetFunc1Callback(callback);
     }
     get {
       global::System.IntPtr funcPtr = GetFunc1Callback();
-      Func1Callback callback = (Func1Callback)System.Runtime.InteropServices.Marshal.GetDelegateForFunctionPointer(funcPtr, typeof(Func1Callback));
+      Func1Callback callback = System.Runtime.InteropServices.Marshal.GetDelegateForFunctionPointer<Func1Callback>(funcPtr);
       return callback;
     }
   }
@@ -216,12 +216,12 @@ struct test_client {};
   public Func2Callback Func2
   {
     set {
-      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(value);
+      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate<Func2Callback>(value);
       SetFunc2Callback(callback);
     }
     get {
       global::System.IntPtr funcPtr = GetFunc2Callback();
-      Func2Callback callback = (Func2Callback)System.Runtime.InteropServices.Marshal.GetDelegateForFunctionPointer(funcPtr, typeof(Func2Callback));
+      Func2Callback callback = System.Runtime.InteropServices.Marshal.GetDelegateForFunctionPointer<Func2Callback>(funcPtr);
       return callback;
     }
   }
@@ -229,36 +229,48 @@ struct test_client {};
   public Func3Callback Func3
   {
     set {
-      _func3Callback = value;
+      long contextId = swigCPtr.Handle.ToInt64();
+      _pendingFunc3Callbacks.Add(contextId, value);
       WrapperFunc3Callback wrapperCallback = (str) => {
         string strData = (str != global::System.IntPtr.Zero ? System.Runtime.InteropServices.Marshal.PtrToStringAuto(str) : null);
-        _func3Callback(strData);
+        value(strData);
       };
-      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(wrapperCallback);
-      _setFunc3Callback(callback);
+      global::System.IntPtr wrapperCallbackPtr = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate<WrapperFunc3Callback>(wrapperCallback);
+      _setFunc3Callback(wrapperCallbackPtr);
     }
     get {
-      return _func3Callback;
+      long contextId = swigCPtr.Handle.ToInt64();
+      if (_pendingFunc3Callbacks.ContainsKey(contextId)) {
+        return _pendingFunc3Callbacks[contextId] as Func3Callback;
+      } else {
+        return null;
+      }
     }
   }
 
   public GetFuncDataCallback GetFuncData
   {
     set {
-      _getFuncDataCallback = value;
+      long contextId = swigCPtr.Handle.ToInt64();
+      _pendingFuncDataCallbacks.Add(contextId, value);
       WrapperGetFuncDataCallback wrapperCallback = (data, size) => {
         byte[] bufferData;
-        bool result = _getFuncDataCallback(out bufferData, size);
+        bool result = value(out bufferData, size);
         if(result) {
           System.Runtime.InteropServices.Marshal.Copy(bufferData, 0, data, bufferData.Length);
         }
         return result;
       };
-      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(wrapperCallback);
+      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate<WrapperGetFuncDataCallback>(wrapperCallback);
       _setGetFuncDataCallback(callback);
     }
     get {
-      return _getFuncDataCallback;
+      long contextId = swigCPtr.Handle.ToInt64();
+      if (_pendingFuncDataCallbacks.ContainsKey(contextId)) {
+        return _pendingFuncDataCallbacks[contextId] as GetFuncDataCallback;
+      } else {
+        return null;
+      }
     }
   }
 
@@ -272,36 +284,63 @@ struct test_client {};
     }
   }
 
-  private Func3Callback _func3Callback;
-  private GetFuncDataCallback _getFuncDataCallback;
+  internal delegate void WrapperFunc3Callback(global::System.IntPtr str);
+  internal delegate bool WrapperGetFuncDataCallback(global::System.IntPtr data, int size);
 
-  public delegate void WrapperFunc3Callback(global::System.IntPtr str);
-  public delegate bool WrapperGetFuncDataCallback(global::System.IntPtr data, int size);
+  private static System.Collections.Generic.Dictionary<long, System.Delegate> _pendingFunc3Callbacks = new System.Collections.Generic.Dictionary<long, System.Delegate>();
+  private static System.Collections.Generic.Dictionary<long, System.Delegate> _pendingFuncDataCallbacks = new System.Collections.Generic.Dictionary<long, System.Delegate>();
 %}
 
 %rename(FuncPtrTest) func_ptr_test_t;
 %ignore set_func_ptr_struct_test;
 
-%inline {
-  typedef void (*wrapper_set_func_ptr_struct_test)(func_ptr_struct_test_t* func_callback, void* user_data); 
-}
+%csmethodmodifiers SetFuncPtrTest "private"
+%csmethodmodifiers GetFuncPtrTest "private"
+%csmethodmodifiers SetUserData "private"
+%csmethodmodifiers GetUserData "private"
 
 %extend func_ptr_test {
-  void SetFuncPtrTest(wrapper_set_func_ptr_struct_test callback) {
-    $self->set_func_ptr_struct_test = callback;
+  void SetFuncPtrTest(void* callback) {
+    $self->set_func_ptr_struct_test = (void(*)(func_ptr_struct_test_t*, void*))callback;
+  }
+
+  void* GetFuncPtrTest() {
+    return (void*)$self->set_func_ptr_struct_test;
   }
 
   void SetUserData(void* data) {
     $self->user_data = data;
   }
+
+  void* GetUserData() {
+    return $self->user_data;
+  }
 }
 
-%cs_callback(wrapper_set_func_ptr_struct_test, FuncPtrTest.SetFuncPtrStructTest);
+%cs_callback(wrapper_set_func_ptr_struct_test, FuncPtrTest.SetFuncPtrStructTestCallback);
 
 %typemap(cscode) func_ptr_test %{
-  public delegate void SetFuncPtrStructTest(FuncPtrStructTest funcCallback, global::System.IntPtr userData);
-%}
+  public delegate void SetFuncPtrStructTestCallback(FuncPtrStructTest funcCallback, global::System.IntPtr userData);
 
+  public SetFuncPtrStructTestCallback SetFuncPtrStructTest
+  {
+    set {
+      _setFuncPtrStructTestCallback = value;
+      WrapperSetFuncPtrStructTestCallback wrapperCallback = (funcCallback, userData) => {
+        FuncPtrStructTest callbacks = (funcCallback != global::System.IntPtr.Zero ? new FuncPtrStructTest(funcCallback, false) : null);
+        _setFuncPtrStructTestCallback(callbacks, userData);
+      };
+      global::System.IntPtr callback = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate<WrapperSetFuncPtrStructTestCallback>(wrapperCallback);
+      SetFuncPtrTest(callback);
+    }
+    get {
+      return _setFuncPtrStructTestCallback;
+    }
+  }
+
+  private SetFuncPtrStructTestCallback _setFuncPtrStructTestCallback; 
+  public delegate void WrapperSetFuncPtrStructTestCallback(global::System.IntPtr funcCallback, global::System.IntPtr userData);
+%}
 
 %rename("%(camelcase)s") "";
 

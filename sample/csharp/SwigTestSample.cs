@@ -78,11 +78,10 @@ namespace Sample {
             NativeCode.CallStructFunc3();
             NativeCode.CallStructGetFuncData();
 
-            // FuncPtrTest.SetFuncPtrStructTest funcPtrStructTestCallbakc = SetFuncPtrStructTestCallback;
-            // FuncPtrTest funcPtrTest = new FuncPtrTest();
-            // funcPtrTest.SetFuncPtrTest(funcPtrStructTestCallbakc);
+            FuncPtrTest funcPtrTest = new FuncPtrTest();
+            funcPtrTest.SetFuncPtrStructTest = SetFuncPtrStructTestCallback;
 
-            // NativeCode.RegistAndCallFuncPtrs(funcPtrTest);
+            NativeCode.RegistAndCallFuncPtrs(funcPtrTest);
 
             Console.WriteLine("=========== Swig Test End ===========");
         }
@@ -131,7 +130,20 @@ namespace Sample {
 
         public static void SetFuncPtrStructTestCallback(FuncPtrStructTest funcCallback, global::System.IntPtr userData)
         {
-            //
+            Console.WriteLine("[SetFuncPtrStructTestCallback] Called C# Callback");
+            Console.WriteLine("=================================================");
+            HandleRef strictHandle = FuncPtrStructTest.getCPtr(funcCallback);
+            long address = strictHandle.Handle.ToInt64();
+            Console.WriteLine("callback structPtrFuncTest address int64 : {0}", address);
+            IntPtr info = Marshal.StringToHGlobalAuto("csharp called");
+            funcCallback.Func1(info);
+            funcCallback.Func2(989898);
+            funcCallback.Func3("callback csharp func3!!");
+            byte[] testData = new byte[5];
+            funcCallback.GetFuncData(out testData, testData.Length);
+            string testDataStr = System.Text.Encoding.UTF8.GetString(testData);
+            Console.WriteLine("callback structPtrFuncTest testData : {0}", testDataStr);
+            Console.WriteLine("=================================================");
         }
 
         static void PrintArray(int[] a) {
