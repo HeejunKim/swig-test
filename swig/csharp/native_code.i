@@ -194,7 +194,7 @@ struct test_client {};
 %cs_callback(wrapper_func_3, FuncPtrStructTest.WrapperFunc3Callback);
 %cs_callback(wrapper_get_func_data, FuncPtrStructTest.WrapperGetFuncDataCallback);
 
-%typemap(cscode) func_ptr_struct_test %{
+%typemap(cscode) func_ptr_struct_test %{ 
   public delegate int Func1Callback(global::System.IntPtr arg);
   public delegate int Func2Callback(int arg);
   public delegate void Func3Callback(string arg);
@@ -289,6 +289,33 @@ struct test_client {};
 
   private static System.Collections.Generic.Dictionary<long, System.Delegate> _pendingFunc3Callbacks = new System.Collections.Generic.Dictionary<long, System.Delegate>();
   private static System.Collections.Generic.Dictionary<long, System.Delegate> _pendingFuncDataCallbacks = new System.Collections.Generic.Dictionary<long, System.Delegate>();
+
+  private void RemoveCallback()
+  {
+    System.Console.WriteLine("FuncPtrStructTest Dispose RemoveCallback");
+    long contextId = swigCPtr.Handle.ToInt64();
+    if(_pendingFunc3Callbacks.ContainsKey(contextId)) {
+      System.Console.WriteLine("FuncPtrStructTest Dispose _pendingFunc3Callbacks RemoveCallback");
+      _pendingFunc3Callbacks.Remove(contextId);
+    }
+    if(_pendingFuncDataCallbacks.ContainsKey(contextId)) {
+      System.Console.WriteLine("FuncPtrStructTest Dispose _pendingFuncDataCallbacks RemoveCallback");
+      _pendingFuncDataCallbacks.Remove(contextId);
+    }
+  }
+%}
+
+%typemap(csdispose) func_ptr_struct_test %{
+  ~$csclassname() {
+    RemoveCallback();
+    Dispose(false);
+  }
+
+  public void Dispose() {
+    RemoveCallback();
+    Dispose(true);
+    global::System.GC.SuppressFinalize(this);
+  }
 %}
 
 %rename(FuncPtrTest) func_ptr_test_t;
