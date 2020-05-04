@@ -83,6 +83,17 @@ namespace Sample {
 
             NativeCode.RegistAndCallFuncPtrs(funcPtrTest);
 
+            Console.WriteLine("=========== Int Array Struct Test ===========");
+            IntArrayStructTest intArrayStructTest = new IntArrayStructTest();
+            intArrayStructTest.Test1 = new int[] {3, 5, 7, 8, 9, 10, 14, 25, 30};
+            intArrayStructTest.Test2 = new int[] {10, 35, 67, 89, 100};
+
+            Console.WriteLine("intArrayStructTest Test1 : {0}", string.Join(",", intArrayStructTest.Test1));
+            Console.WriteLine("intArrayStructTest Test2 : {0}", string.Join(",", intArrayStructTest.Test2));
+
+            Console.WriteLine("intArrayStructTest Test1[3] : {0}", intArrayStructTest.Test1[3]);
+            Console.WriteLine("intArrayStructTest Test2[4] : {0}", intArrayStructTest.Test2[4]);
+
             Console.WriteLine("=========== Swig Test End ===========");
         }
 

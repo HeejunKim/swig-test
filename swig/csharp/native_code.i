@@ -369,6 +369,65 @@ struct test_client {};
   public delegate void WrapperSetFuncPtrStructTestCallback(global::System.IntPtr funcCallback, global::System.IntPtr userData);
 %}
 
+// int arrsy struct test
+%rename(IntArrayStructTest) int_array_struct_test;
+
+%ignore test1;
+%ignore test2;
+
+%extend int_array_struct_test {
+  void _setTest1(void* value) {
+    $self->test1 = (int*)value;
+  }
+
+  void* _getTest1() {
+    return (void*)$self->test1;
+  }
+
+  void _setTest2(void* value) {
+    $self->test2 = (int*)value;
+  }
+
+  void* _getTest2() {
+    return (void*)$self->test2;
+  }
+}
+
+%typemap(cscode) int_array_struct_test %{
+  public int[] Test1
+  {
+    set {
+      test1Size = value.Length;
+      global::System.IntPtr valuePtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(value, 0);
+      _setTest1(valuePtr);
+    }
+    get {
+      global::System.IntPtr valuePtr = _getTest1();
+      int[] valueArray = new int[test1Size];
+      global::System.Runtime.InteropServices.Marshal.Copy(valuePtr, valueArray, 0, test1Size);
+      return valueArray;
+    }
+  }
+
+  public int[] Test2
+  {
+    set {
+      test2Size = value.Length;
+      global::System.IntPtr valuePtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(value, 0);
+      _setTest2(valuePtr);
+    }
+    get {
+      global::System.IntPtr valuePtr = _getTest2();
+      int[] valueArray = new int[test2Size];
+      global::System.Runtime.InteropServices.Marshal.Copy(valuePtr, valueArray, 0, test2Size);
+      return valueArray;
+    }
+  }
+
+  private static int test1Size = 0;
+  private static int test2Size = 0;
+%}
+
 %rename("%(camelcase)s") "";
 
 %include "native_code.h"

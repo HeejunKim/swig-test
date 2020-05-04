@@ -65,6 +65,11 @@ typedef struct func_ptr_test {
 
 void regist_and_call_func_ptrs(func_ptr_test_t* func_ptrs);
 
+typedef struct int_array_struct_test {
+    int* test1;
+    int* test2;
+} int_array_struct_test_t;
+
 #ifdef __cplusplus
 }
 #endif
