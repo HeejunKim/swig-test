@@ -173,3 +173,10 @@ void call_struct_get_func_data() {
 void regist_and_call_func_ptrs(func_ptr_test_t* func_ptrs) {
   func_ptrs->set_func_ptr_struct_test(global_func_struct, (void*)"232324");
 }
+
+void string_array_test(const char* names[], int names_size) {
+  int i;
+  for (i=0; i<names_size; i++) {
+    printf("string_array_test name[%d] = %s\n", i, names[i]);
+  }
+}

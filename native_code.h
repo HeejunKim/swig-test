@@ -70,6 +70,8 @@ typedef struct int_array_struct_test {
     int* test2;
 } int_array_struct_test_t;
 
+void string_array_test(const char* names[], int names_size);
+
 #ifdef __cplusplus
 }
 #endif

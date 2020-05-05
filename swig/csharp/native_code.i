@@ -428,6 +428,28 @@ struct test_client {};
   private static int test2Size = 0;
 %}
 
+
+
+CSHARP_ARRAYS(char *, string)
+%typemap(imtype, inattributes="[global::System.Runtime.InteropServices.In, global::System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPArray, SizeParamIndex=0, ArraySubType=System.Runtime.InteropServices.UnmanagedType.LPStr)]") char *INPUT[] "string[]"
+%apply char *INPUT[]  { char** names }
+
+%ignore string_array_test;
+%csmethodmodifiers wrapperStringArrayTest "private"
+
+%inline %{
+  void wrapperStringArrayTest(char** names, int size) {
+    string_array_test((const char*(*))names, size);
+  }
+%}
+
+%pragma(csharp) modulecode=%{
+  public static void StringArrayTest(string[] names, int size) {
+    wrapperStringArrayTest(names, size);
+  }
+%}
+
+
 %rename("%(camelcase)s") "";
 
 %include "native_code.h"

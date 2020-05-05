@@ -94,6 +94,8 @@ namespace Sample {
             Console.WriteLine("intArrayStructTest Test1[3] : {0}", intArrayStructTest.Test1[3]);
             Console.WriteLine("intArrayStructTest Test2[4] : {0}", intArrayStructTest.Test2[4]);
 
+            string[] names = new string[] {"james", "micle", "jonson"};
+            NativeCode.StringArrayTest(names, names.Length);
             Console.WriteLine("=========== Swig Test End ===========");
         }
 
